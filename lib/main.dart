@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,13 +15,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.teal,
         ).copyWith(
-          secondary: Colors.blueAccent,
+          secondary: Colors.black12
         ),
       ),
-      home: const MyHomePage(title: 'Adda'),
-      
+      home: const AuthScreen(),
+
     );
   } 
 }
