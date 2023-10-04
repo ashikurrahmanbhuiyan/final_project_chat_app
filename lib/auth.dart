@@ -24,27 +24,28 @@ class _AuthScreenState extends State<AuthScreen> {
     }
     _formKey.currentState!.save ();
     
-    
+    try{
     if(_isLogin){
-
-    }else{
-      try{
-       final UserCredentials = await _firebase.createUserWithEmailAndPassword(
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
         email: _enteredEmail, password: _enteredPassword);
-        print(UserCredentials);
-      }on FirebaseAuthException catch(error){
-        if(error.code == 'email-alreay-in-use'){
+        print(userCredentials);
+    }else{
+       final userCredentials = await _firebase.createUserWithEmailAndPassword(
+        email: _enteredEmail, password: _enteredPassword);
+        print(userCredentials);
+      }
+    }on FirebaseAuthException catch(error){
+      if(error.code == 'email-alreay-in-use'){
 
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(
-            error.message ?? 'An error occurred, please check your credentials!')
-            )
-        );
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(
+          error.message ?? 'An error occurred, please check your credentials!')
+          )
+      );
     }
 
   }
-}
 
   @override
   Widget build(BuildContext context) {
