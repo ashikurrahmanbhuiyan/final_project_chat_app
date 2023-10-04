@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget{
   const AuthScreen({Key? key}) : super(key: key);
@@ -8,6 +11,41 @@ class AuthScreen extends StatefulWidget{
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+
+  final _formKey = GlobalKey<FormState>();
+  var _isLogin = true;
+  var _enteredEmail = '';
+  var _enteredPassword = '';
+
+  void _submit() async{
+    final  isValid = _formKey.currentState!.validate();
+    if(!isValid) {
+      return;
+    }
+    _formKey.currentState!.save ();
+    
+    
+    if(_isLogin){
+
+    }else{
+      try{
+       final UserCredentials = await _firebase.createUserWithEmailAndPassword(
+        email: _enteredEmail, password: _enteredPassword);
+        print(UserCredentials);
+      }on FirebaseAuthException catch(error){
+        if(error.code == 'email-alreay-in-use'){
+
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(
+            error.message ?? 'An error occurred, please check your credentials!')
+            )
+        );
+    }
+
+  }
+}
+
   @override
   Widget build(BuildContext context) {
       return Scaffold(
@@ -26,6 +64,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: SingleChildScrollView(
                     child: Padding(padding: const EdgeInsets.all(16),
                     child: Form(
+                      key: _formKey,
                       child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -36,21 +75,48 @@ class _AuthScreenState extends State<AuthScreen> {
                             keyboardType: TextInputType.emailAddress,
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                              if(value ==null || value.trim().isEmpty || !value.contains('@')){
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                            onSaved: (value){
+                              _enteredEmail = value!;
+                            },
                         ),
+
                         TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
                             ),
                             obscureText: true,
+                            validator: (value) {
+                                if (value == null ||
+                                    value.trim().isEmpty || value.length < 6) {
+                                  return 'Password must be at least 6 characters long';
+                                }
+                                return null;
+                              },
+                              onSaved: (value){
+                              _enteredPassword = value!;
+                            }
                           ),
                           const SizedBox(height: 12,),
                           ElevatedButton(
-                            onPressed: (){},
-                            child: const Text('Signup'),
+                            onPressed: _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.onPrimary
+                            ),
+                            child: Text(_isLogin?'Login':'Signup'),
                           ),
                           TextButton(
-                            onPressed: (){},
-                            child: const Text('Already have an account? Login'),
+                            onPressed: (){
+                              setState(() {
+                                _isLogin = !_isLogin;
+                              });
+                            },
+                            child: Text(_isLogin ? 'Create an account?' : 'I already have a account'),
                           )
                       ],
                     )),
