@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:final_project_chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -17,12 +20,15 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
+  File? _userImageFile;
 
   void _submit() async{
     final  isValid = _formKey.currentState!.validate();
-    if(!isValid) {
+    if(!isValid && !_isLogin && _userImageFile == null) {
       return;
     }
+
+
     _formKey.currentState!.save ();
     
     try{
@@ -31,8 +37,15 @@ class _AuthScreenState extends State<AuthScreen> {
         email: _enteredEmail, password: _enteredPassword);
         //print(userCredentials);
     }else{
-      await _firebase.createUserWithEmailAndPassword(
+      final userCredentials =  await _firebase.createUserWithEmailAndPassword(
         email: _enteredEmail, password: _enteredPassword);
+
+        final strogeRef =  FirebaseStorage.instance.ref().child('user_dp')
+        .child('${userCredentials.user!.uid}.jpg');
+
+        await strogeRef.putFile(_userImageFile!);
+        final imgUrl = await strogeRef.getDownloadURL();
+        print(imgUrl);
       }
     }on FirebaseAuthException catch(error){
       // if(error.code == 'email-alreay-in-use'){
@@ -70,7 +83,10 @@ class _AuthScreenState extends State<AuthScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if(!_isLogin)
-                          const UserImagePicker(),
+                           UserImagePicker(onPickImage: (userImage){
+                            _userImageFile =  userImage;
+                            AlertDialog.adaptive(title: Text('picked'));
+                          },),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Email Adress',

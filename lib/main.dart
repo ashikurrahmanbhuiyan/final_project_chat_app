@@ -12,7 +12,11 @@ Future<void> main() async {
       apiKey: 'AIzaSyDu1g0zL6xF7-h7bCJItSqggMIHy8VvfNA', 
       appId: '1:905790811223::6cc80b4be0ec59f13f0712', 
       messagingSenderId: '905790811223', 
-      projectId: 'flutter-chat-app-81e78')
+      projectId: 'flutter-chat-app-81e78',
+      authDomain: 'flutter-chat-app-81e78.firebaseapp.com',
+    storageBucket: 'flutter-chat-app-81e78.appspot.com',
+    measurementId: 'G-S98XFHJ5BD',
+      )
   );
   runApp(const MyApp());
 }
