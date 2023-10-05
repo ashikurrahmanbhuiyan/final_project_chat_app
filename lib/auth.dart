@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredEmail = '';
   var _enteredPassword = '';
   File? _userImageFile;
+  var _isUploading = false;
 
   void _submit() async{
     final  isValid = _formKey.currentState!.validate();
@@ -32,6 +34,10 @@ class _AuthScreenState extends State<AuthScreen> {
     _formKey.currentState!.save ();
     
     try{
+      setState(() {
+        _isUploading = true;
+      });
+
     if(_isLogin){
       await _firebase.signInWithEmailAndPassword(
         email: _enteredEmail, password: _enteredPassword);
@@ -45,7 +51,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await strogeRef.putFile(_userImageFile!);
         final imgUrl = await strogeRef.getDownloadURL();
-        print(imgUrl);
+        //print(imgUrl);
+
+        await FirebaseFirestore.instance.collection('users')
+        .doc(userCredentials.user!.uid).set({
+          'username': _enteredEmail,
+          'email': _enteredEmail,
+          'image_url': imgUrl,
+        });
       }
     }on FirebaseAuthException catch(error){
       // if(error.code == 'email-alreay-in-use'){
@@ -56,6 +69,9 @@ class _AuthScreenState extends State<AuthScreen> {
           error.message ?? 'An error occurred, please check your credentials!')
           )
       );
+      setState(() {
+        _isUploading = false;
+      });
     }
 
   }
@@ -85,7 +101,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         if(!_isLogin)
                            UserImagePicker(onPickImage: (userImage){
                             _userImageFile =  userImage;
-                            AlertDialog.adaptive(title: Text('picked'));
                           },),
                         TextFormField(
                           decoration: const InputDecoration(
@@ -104,7 +119,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = value!;
                             },
                         ),
-
                         TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
@@ -122,6 +136,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             }
                           ),
                           const SizedBox(height: 12,),
+                          if(_isUploading)
+                            const CircularProgressIndicator(),
+                          if(!_isUploading)
                           ElevatedButton(
                             onPressed: _submit,
                             style: ElevatedButton.styleFrom(
@@ -129,6 +146,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             child: Text(_isLogin?'Login':'Signup'),
                           ),
+                          if(!_isUploading)
                           TextButton(
                             onPressed: (){
                               setState(() {

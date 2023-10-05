@@ -14,8 +14,8 @@ Future<void> main() async {
       messagingSenderId: '905790811223', 
       projectId: 'flutter-chat-app-81e78',
       authDomain: 'flutter-chat-app-81e78.firebaseapp.com',
-    storageBucket: 'flutter-chat-app-81e78.appspot.com',
-    measurementId: 'G-S98XFHJ5BD',
+      storageBucket: 'flutter-chat-app-81e78.appspot.com',
+      measurementId: 'G-S98XFHJ5BD',
       )
   );
   runApp(const MyApp());
