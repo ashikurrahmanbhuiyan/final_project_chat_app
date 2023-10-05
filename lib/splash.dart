@@ -8,6 +8,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('connecting...'),
+        
       ),
       body: const Center(
         child: Text('loading...'),

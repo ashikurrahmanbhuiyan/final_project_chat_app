@@ -12,6 +12,7 @@ class ChatScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(top: 20,right: 35),
+          
             child: ElevatedButton(
               onPressed: () async{
                 await FirebaseAuth.instance.signOut();

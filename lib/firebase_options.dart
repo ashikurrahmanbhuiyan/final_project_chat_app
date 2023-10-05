@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -41,16 +38,23 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return web;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDu1g0zL6xF7-h7bCJItSqggMIHy8VvfNA',
+    appId: '1:905790811223:web:6cc80b4be0ec59f13f0712',
+    messagingSenderId: '905790811223',
+    projectId: 'flutter-chat-app-81e78',
+    authDomain: 'flutter-chat-app-81e78.firebaseapp.com',
+    storageBucket: 'flutter-chat-app-81e78.appspot.com',
+    measurementId: 'G-S98XFHJ5BD',
+  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAQ5vZkpQYM0cZ7PThh0Z8whajdJY4v9jc',

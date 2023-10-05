@@ -4,12 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'auth.dart'; 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyDu1g0zL6xF7-h7bCJItSqggMIHy8VvfNA', 
+      appId: '1:905790811223::6cc80b4be0ec59f13f0712', 
+      messagingSenderId: '905790811223', 
+      projectId: 'flutter-chat-app-81e78')
+  );
   runApp(const MyApp());
 }
 
@@ -34,13 +38,13 @@ class MyApp extends StatelessWidget {
           if(snapshot.connectionState == ConnectionState.waiting){
             return const SplashScreen();
           }
+
           if(snapshot.hasData){
             return const ChatScreen();
           }
           return const AuthScreen();
         }
       ),
-
     );
   } 
 }
