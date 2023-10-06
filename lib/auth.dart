@@ -21,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
+  var _entereduserName = '';
   File? _userImageFile;
   var _isUploading = false;
 
@@ -55,7 +56,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await FirebaseFirestore.instance.collection('users')
         .doc(userCredentials.user!.uid).set({
-          'username': _enteredEmail,
+          'username': _entereduserName,
           'email': _enteredEmail,
           'image_url': imgUrl,
         });
@@ -119,6 +120,21 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = value!;
                             },
                         ),
+
+                        TextFormField(
+                            decoration: const InputDecoration(labelText: 'userName'),
+                            enableSuggestions: false,
+                            validator: (value){
+                            if(value ==null || value.trim().isEmpty){
+                                return 'Please enter a valid  username';
+                              }
+                              return null;
+                            },
+                          onSaved: (value){
+                              _entereduserName = value!;
+                          },
+                        ),
+                        if(!_isLogin)
                         TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
