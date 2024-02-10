@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
@@ -8,17 +11,52 @@ class NewMessage extends StatefulWidget {
 }
 
 class _NewMessageState extends State<NewMessage> {
-  
+
+  final _messageController = TextEditingController();
+  @override
+  void dispose(){
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void _submit() async{
+    final eteredMessage = _messageController.text;
+    if(eteredMessage.isEmpty){
+      return;
+    }
+    final user = FirebaseAuth.instance.currentUser!;
+
+    FocusScope.of(context).unfocus();
+    _messageController.clear();
+
+    final userData = await FirebaseFirestore.instance.collection('users')
+    .doc(user.uid).get();
+    FirebaseFirestore.instance.collection('chat').add({
+      'text': eteredMessage,
+      'createdAt': Timestamp.now(),
+      'userId' : user.uid,
+      'username' : userData.data()!['username'],
+      'userImage' : userData.data()!['image_url']
+    });
+    
+    
+  }
+ 
+  @override
   build(BuildContext context){
     return Padding(
-      padding: EdgeInsets.only(left: 15 , right: 1 , bottom: 14),
+      padding: const EdgeInsets.only(left: 15 , right: 1 , bottom: 14),
       child: Row(children: [
-        const Expanded(child: TextField(
-        
+          Expanded(child: TextField(
+          controller: _messageController,
+          textCapitalization: TextCapitalization.sentences,
+          autocorrect: true,
+          enableSuggestions: true,
+          decoration: const InputDecoration(labelText: 'Send a message...'),
         )),
         IconButton(
           color: Theme.of(context).colorScheme.primary,
-          onPressed: (){}, 
+          onPressed: _submit,
           icon: const Icon(Icons.send))
       ],),
       );
